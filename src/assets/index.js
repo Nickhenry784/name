@@ -1,9 +1,7 @@
 export const images = {
-  background: require('./images/background1.png'),
+  background: require('./images/background.png'),
   back: require('./images/back.png'),
-  backBtn: require('./images/backButton.png'),
-  buy: require('./images/buy.png'),
-  logoinapp: require('./images/logoinapp.png'),
-  next: require('./images/next.png'),
-  start: require('./images/start.png'),
+  button: require('./images/button.png'),
+  swap: require('./images/swap.png'),
+  copy: require('./images/copy.png'),
 }

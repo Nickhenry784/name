@@ -3,23 +3,31 @@ import {
   StyleSheet, 
   TouchableOpacity,
   Text, Dimensions, 
-  ImageBackground, 
+  ImageBackground,
+  FlatList,
+  TextInput, 
   Image, 
-  Alert  } from "react-native";
+  Alert} from "react-native";
 import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {decrement} from '../redux/pointSlice';
 import {useDispatch, useSelector} from 'react-redux';
 import { images } from "../assets";
+import { ScrollView } from "react-native-gesture-handler";
+import { useClipboard } from "@react-native-clipboard/clipboard";
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
+
+const fontData = ['Amsterdam', 'Angelia Davitson', 'Creattion Demo', 'Gisella Jane', 'High Spirited', 'Mastrih', 'SignaturexDemoRegular', 'The Checkmate', 'FontsFree-Net-KanvasBold_PERSONAL_USE_ONLY', 'PressStart2P-Regular', 'Roboto-Black', 'Roboto-BlackItalic'];
 
 const Home = () => {
   const navigation = useNavigation();
 
   const points = useSelector(state => state.points);
   const dispatch = useDispatch();
+  const [text, onChangeText] = useState("Name");
+  const [show, setShow] = useState(false);
 
 
   useEffect(() => {
@@ -32,7 +40,11 @@ const Home = () => {
       return false;
     }
     dispatch(decrement());
-    navigation.navigate("Play");
+    setShow(true);
+  }
+
+  const onClickSwapButton = () => {
+    
   }
 
 
@@ -43,20 +55,40 @@ const Home = () => {
 
   return (
     <ImageBackground style={appStyle.homeView} source={images.background}>
+      <ScrollView contentContainerStyle={{alignItems: 'center'}}>
       <View style={appStyle.appBar}>
         <TouchableOpacity onPress={onClickTurnButton}>
           <View style={appStyle.turnView}>
-            <Image source={images.buy} style={appStyle.buyImage} />
+            <Image source={images.button} style={appStyle.buyImage} />
             <Text style={appStyle.turnText}>{points.value}</Text>
           </View>
         </TouchableOpacity>
       </View>
-      <Image source={images.logoinapp} style={appStyle.logoImage} />
-      <View style={appStyle.bottomView}>
-        <TouchableOpacity onPress={onClickStartButton}>
-          <Image source={images.start} style={appStyle.createButton} />
-        </TouchableOpacity>
-      </View>
+      <Text style={appStyle.labelText}>Name With Special Characters</Text>
+      <TextInput
+        style={appStyle.input}
+        onChangeText={onChangeText}
+        onChange={() => setShow(false)}
+        value={text}
+      />
+      <TouchableOpacity onPress={onClickStartButton}>
+        <Image source={images.swap} style={appStyle.createButton} />
+      </TouchableOpacity>
+      {show && <FlatList 
+        data={fontData}
+        scrollEnabled={false}
+        renderItem={({item, index}) => (
+          <View key={index} style={appStyle.fontView}>
+            <TouchableOpacity onPress={() => useClipboard.setString(text)}>
+              <Image source={images.copy} style={appStyle.backStyle} />
+            </TouchableOpacity>
+            <View style={appStyle.textView}>
+              <Text style={{fontFamily: item, fontSize: 25, color: 'white',}}>{text}</Text>
+            </View>
+          </View>
+        )}
+      />}
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -68,21 +100,24 @@ export const appStyle = StyleSheet.create({
     width: '100%',
     height: '100%',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     resizeMode: 'cover',
   },
-  attributeView: {
-    flex: 0.1,
-    width: '40%',
-    flexDirection: 'row',
+  textView: {
+    width: windowWidth * 0.6,
+    height: windowHeight * 0.1,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 20,
+    justifyContent: 'center',
+    backgroundColor: '#5b748a',
   },
-  logoImage: {
-    width: windowWidth * 0.4,
-    height: windowWidth * 0.4,
-    resizeMode: 'cover',
+  input: {
+    height: windowHeight * 0.1,
+    width: windowWidth * 0.6,
+    backgroundColor: '#5b748a',
+    margin: 10,
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 20,
   },
   appBar: {
     flex: 0.1,
@@ -101,12 +136,13 @@ export const appStyle = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  centerImage: {
-    width: windowWidth * 0.4,
-    height: windowWidth * 0.4,
-    resizeMode: 'cover',
+  fontView: {
+    width: windowWidth * 0.8,
+    height: windowHeight * 0.15,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    marginVertical: 10,
   },
   scoreStyle: {
     width: windowWidth * 0.1,
@@ -115,20 +151,19 @@ export const appStyle = StyleSheet.create({
     margin: 8,
   },
   turnText: {
-    fontSize: windowWidth > 640 ? 30 : 25,
-    fontWeight: 'bold',
+    fontSize: 30,
+    fontFamily: 'Roboto-Black',
     color: 'white',
   },
   tutorialText: {
-    marginVertical: 10,
-    fontSize: windowWidth > 640 ? 25 : 18,
+    fontSize: 18,
     color: 'white',
-    fontWeight: 'bold',
   },
   labelText: {
-    fontSize: windowWidth > 640 ? 60 : 40,
+    fontSize: 40,
     color: 'white',
-    fontWeight: 'bold',
+    textAlign: 'center',
+    fontFamily: 'FontsFree-Net-KanvasBold_PERSONAL_USE_ONLY',
   },
   buyImage: {
     width: windowWidth * 0.1,
@@ -152,10 +187,11 @@ export const appStyle = StyleSheet.create({
     width: windowWidth * 0.3,
     height: windowHeight * 0.1,
     resizeMode: 'contain',
+    marginVertical: 20,
   },
   backStyle: {
-    width: windowWidth * 0.2,
-    height: windowWidth * 0.2,
+    width: windowWidth * 0.1,
+    height: windowWidth * 0.1,
     resizeMode: 'contain',
   },
 });

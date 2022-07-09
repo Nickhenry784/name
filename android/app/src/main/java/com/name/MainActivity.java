@@ -1,4 +1,4 @@
-package com.kangtazapp.signatmaker;
+package com.amazon.namexspecialcharacter;
 
 import com.facebook.react.ReactActivity;
 
